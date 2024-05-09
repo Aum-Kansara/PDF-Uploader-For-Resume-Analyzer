@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Uploader</title>
+    <style>
+        #loading {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>PDF Uploader</h1>
+    <input type="file" id="fileInput" accept=".pdf"><br><br>
+    <button onclick="uploadPDF()">Upload</button><br><br>
+    <div id="loading">Uploading... <img src="loading.gif" alt="Loading"></div>
+    <div id="result"></div>
+
+    <script>
+        function uploadPDF() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please select a PDF file.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    document.getElementById('loading').style.display = 'none';
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        document.getElementById('result').innerHTML = `Uploaded successfully. <a href="${response.link}" target="_blank">Download link</a>`;
+                    } else {
+                        document.getElementById('result').innerHTML = 'Upload failed. Please try again.';
+                    }
+                }
+            };
+
+            xhr.open('POST', 'https://hook.eu2.make.com/as46ac8ppoj9dtbsej6upbayswbk3aa2', true);
+            xhr.send(formData);
+
+            document.getElementById('loading').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
